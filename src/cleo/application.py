@@ -324,8 +324,10 @@ class Application:
 
                 self.render_error(e, io)
 
-                exit_code = 1
-                # TODO: Custom error exit codes
+                if isinstance(e, CleoError) and e.exit_code is not None:
+                    exit_code = e.exit_code
+                else:
+                    exit_code = 1
         except KeyboardInterrupt:
             exit_code = 1
 

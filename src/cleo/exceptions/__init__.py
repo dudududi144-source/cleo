@@ -42,6 +42,28 @@ class CleoUserError(CleoError):
     """
 
 
+class ExitCodeError(CleoError):
+    """
+    Raised from within a command to set a custom application exit code.
+
+    The provided ``exit_code`` must be in the valid range ``1..255``. Any other
+    value raises :class:`ValueError` at construction time.
+    """
+
+    def __init__(self, exit_code: int) -> None:
+        if not isinstance(exit_code, int) or isinstance(exit_code, bool):
+            raise ValueError(
+                f"Exit code must be an int, got {type(exit_code).__name__}"
+            )
+        if exit_code < 1 or exit_code > 255:
+            raise ValueError(
+                f"Exit code {exit_code} is out of range. Valid range is 1..255."
+            )
+
+        super().__init__(f"Command exited with code {exit_code}")
+        self.exit_code = exit_code
+
+
 class CleoMissingArgumentsError(CleoUserError):
     """
     Raised when called command was not given required arguments.
