@@ -48,6 +48,34 @@ class CleoMissingArgumentsError(CleoUserError):
     """
 
 
+class ExitCodeError(CleoUserError):
+    """
+    Raised by a command to signal the application that it should exit with
+    a specific non-default exit code.
+
+    The application catches this exception and exits with ``exit_code``
+    instead of the generic ``1`` it would use for any other exception.
+
+    The provided ``exit_code`` must be in the valid range ``1..255``
+    (POSIX process exit status codes). Constructing the class with a
+    value outside this range raises ``ValueError``.
+    """
+
+    def __init__(self, exit_code: int) -> None:
+        if not isinstance(exit_code, int) or isinstance(exit_code, bool):
+            raise ValueError(
+                f"Exit code must be an int, got {type(exit_code).__name__}"
+            )
+
+        if exit_code < 1 or exit_code > 255:
+            raise ValueError(
+                f"Exit code {exit_code} is not in the valid range 1..255"
+            )
+
+        super().__init__(f"Command exited with code {exit_code}")
+        self.exit_code = exit_code
+
+
 def _suggest_similar_names(name: str, names: list[str]) -> str | None:
     if not names:
         return None

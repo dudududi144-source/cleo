@@ -22,6 +22,7 @@ from cleo.exceptions import CleoError
 from cleo.exceptions import CleoLogicError
 from cleo.exceptions import CleoNamespaceNotFoundError
 from cleo.exceptions import CleoUserError
+from cleo.exceptions import ExitCodeError
 from cleo.io.inputs.argument import Argument
 from cleo.io.inputs.argv_input import ArgvInput
 from cleo.io.inputs.definition import Definition
@@ -324,8 +325,10 @@ class Application:
 
                 self.render_error(e, io)
 
-                exit_code = 1
-                # TODO: Custom error exit codes
+                if isinstance(e, ExitCodeError):
+                    exit_code = e.exit_code
+                else:
+                    exit_code = 1
         except KeyboardInterrupt:
             exit_code = 1
 
